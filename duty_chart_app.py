@@ -121,7 +121,7 @@ with st.expander("➕ Add a Duty Row", expanded=True):
     with col2:
         selected_audiologist = st.multiselect("Audiologist", teams["audiologist"])
    with col3:
-    selected_edp = st.multiselect("EDP", teams["edp"].tolist() + teams["IT"].tolist())
+       selected_audiologist = st.multiselect("EDP", teams["EDP"])
     with col4:
         selected_spectacles = st.multiselect("Spectacles", teams["spectacles"])
     with col5:
