@@ -106,7 +106,7 @@ with col1:
     sap_id = st.text_input("🆔 SAP ID", "Enter sap id")
 with col2:
     camp_id = st.text_input("🎪 CAMP ID", "Enter Camp Id")
-    nob = st.text_input("🔢 NOB", "Enter Camp Id")
+    nob = st.text_input("🔢 NOB", "ENTER NOB")
 
 value = st.text_input("💰 VALUE", "Enter value")
 
@@ -305,3 +305,4 @@ if st.button("Generate Duty Chart", type="primary", use_container_width=True):
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             use_container_width=True
         )
+
