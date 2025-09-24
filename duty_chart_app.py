@@ -121,7 +121,7 @@ with st.expander("➕ Add a Duty Row", expanded=True):
     with col2:
         selected_audiologist = st.multiselect("Audiologist", teams["audiologist"])
     with col3:
-        selected_edp = st.multiselect("EDP", teams["edp"])
+        selected_edp = st.multiselect("EDP", teams["edp"]+teams["IT"])
     with col4:
         selected_spectacles = st.multiselect("Spectacles", teams["spectacles"])
     with col5:
@@ -291,4 +291,5 @@ if st.button("Generate Duty Chart", type="primary", use_container_width=True):
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             use_container_width=True
         )
+
 
