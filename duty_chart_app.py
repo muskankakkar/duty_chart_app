@@ -124,8 +124,7 @@ with st.expander("➕ Add a Duty Row", expanded=True):
     with col2:
         team_headed = st.multiselect(
     "👩‍⚕️ Team Headed By", 
-    teams["I/C"] + teams["p_o"]  # combine I/C and P&O
-)  # ✅ Multi-select
+    teams["I/C"] + teams["p_o"] )  # ✅ Multi-select
 
     st.markdown("#### Select Team Members")
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -308,6 +307,7 @@ if st.button("Generate Duty Chart", type="primary", use_container_width=True):
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             use_container_width=True
         )
+
 
 
 
