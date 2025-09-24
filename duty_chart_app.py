@@ -13,18 +13,13 @@ st.set_page_config(page_title="Duty Chart Generator", layout="wide")
 # ---------------- Dark Theme CSS ----------------
 dark_theme_css = """
 <style>
-/* Page background */
 [data-testid="stAppViewContainer"] {
     background-color: #0e1117;
     color: white;
 }
-
-/* Sidebar */
 [data-testid="stSidebar"] {
     background-color: #1c1e26;
 }
-
-/* Input fields */
 .stTextInput > div > div > input,
 .stTextArea > div > textarea,
 .stSelectbox > div > div,
@@ -34,26 +29,19 @@ dark_theme_css = """
     border: 1px solid #444 !important;
     border-radius: 6px;
 }
-
-/* Headers and text */
 h1, h2, h3, h4, h5, h6, label, p {
     color: white !important;
 }
-
-/* Dataframe background */
 .stDataFrame {
     background-color: #0e1117 !important;
     color: white !important;
 }
-
-/* Buttons */
 .stButton > button {
     background-color: #2e3b4e !important;
     color: white !important;
     border-radius: 8px;
     border: 1px solid #444 !important;
 }
-
 .stButton > button:hover {
     background-color: #3e4f65 !important;
     border: 1px solid #666 !important;
@@ -68,7 +56,8 @@ DEFAULT_TEAMS = {
     "audiologist": ["Mr. Vikram", "Mr. Aditya"],
     "edp": ["Mr. Paritosh", "Mr. Yogesh Sharma"],
     "spectacles": ["Spectacles Team"],
-    "technician": ["Technician 1", "Technician 2"]
+    "technician": ["Technician 1", "Technician 2"],
+    "I/C": ["Mr Pankaj Dwivedi"]   # Added default I/C
 }
 
 def load_teams(path="teams.json"):
@@ -95,10 +84,7 @@ if "duties" not in st.session_state:
 # ---------------- Camp Info Inputs ----------------
 st.markdown("### 🏕️ Camp Information")
 
-chart_title = st.text_input(
-    "📝 Duty Chart For:", 
-    "DUTY CHART FOR ADIP + RVY DISTRIBUTION CAMP"
-)
+chart_title = st.text_input("📝 Duty Chart For:", "DUTY CHART FOR ADIP + RVY DISTRIBUTION CAMP")
 
 col1, col2 = st.columns(2)
 with col1:
@@ -122,9 +108,11 @@ with st.expander("➕ Add a Duty Row", expanded=True):
     with col1:
         camp_date = st.date_input("📅 Select Date", value=date.today())
     with col2:
+        # ✅ Fix: Combine I/C and P&O into one list
         team_headed = st.multiselect(
-    "👩‍⚕️ Team Headed By", 
-    teams["I/C"] + teams["p_o"] )  # ✅ Multi-select
+            "👩‍⚕️ Team Headed By",
+            teams["I/C"] + teams["p_o"]
+        )
 
     st.markdown("#### Select Team Members")
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -140,7 +128,7 @@ with st.expander("➕ Add a Duty Row", expanded=True):
         selected_technician = st.multiselect("Technician", teams["technician"])
 
     reporting_time = st.text_area(
-        "⏰ Reporting Time(s)", 
+        "⏰ Reporting Time(s)",
         "Team report at camp venue on " + date.today().strftime("%d.%m.%Y"),
         help="Enter multiple reporting times if needed (each on a new line)"
     )
@@ -177,7 +165,6 @@ if st.session_state.duties:
             "Reporting Time": duty["reporting_time"]
         })
     df = pd.DataFrame(preview_data)
-
     st.dataframe(df, use_container_width=True)
 
     for i in range(len(st.session_state.duties)):
@@ -195,7 +182,7 @@ def build_doc(duties, chart_title, venue, sap_id, camp_id, nob, value):
 
     # Heading
     heading = doc.add_paragraph()
-    hrun = heading.add_run(chart_title.upper())  # ✅ Always uppercase
+    hrun = heading.add_run(chart_title.upper())
     hrun.bold = True
     hrun.font.size = Pt(14)
     hrun.font.underline = True
@@ -205,10 +192,8 @@ def build_doc(duties, chart_title, venue, sap_id, camp_id, nob, value):
     sub_table = doc.add_table(rows=2, cols=2)
     sub_table.style = None
     sub_table.autofit = True
-
     sub_table.rows[0].cells[0].text = f"SAP ID: {sap_id}"
     sub_table.rows[0].cells[1].text = f"CAMP ID: {camp_id}"
-
     sub_table.rows[1].cells[0].text = f"NOB = {nob}"
     sub_table.rows[1].cells[1].text = f"VALUE: {value}"
 
@@ -243,7 +228,7 @@ def build_doc(duties, chart_title, venue, sap_id, camp_id, nob, value):
         row = table.add_row().cells
         row[0].text = str(i)
         row[1].text = duty["date"].strftime("%d.%m.%Y")
-        row[2].text = "\n".join([f"{th} (P&O)" for th in duty["team_headed"]])
+        row[2].text = "\n".join([f"{th}" for th in duty["team_headed"]])
 
         team_lines = []
         for n in duty["p_o"]:
@@ -265,8 +250,7 @@ def build_doc(duties, chart_title, venue, sap_id, camp_id, nob, value):
     # Signatures
     table_sig = doc.add_table(rows=1, cols=2)
     table_sig.autofit = True
-    table_sig.style = None  
-
+    table_sig.style = None
     left_cell = table_sig.rows[0].cells[0]
     right_cell = table_sig.rows[0].cells[1]
 
@@ -307,8 +291,3 @@ if st.button("Generate Duty Chart", type="primary", use_container_width=True):
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             use_container_width=True
         )
-
-
-
-
-
