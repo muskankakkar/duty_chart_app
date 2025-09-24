@@ -82,7 +82,7 @@ if "duties" not in st.session_state:
     st.session_state.duties = []
 
 # ---------------- Camp Info Inputs ----------------
-st.markdown("### 🏕️ Camp Information")
+st.markdown("### Camp Information")
 
 chart_title = st.text_input("📝 Duty Chart For:", "DUTY CHART FOR ADIP + RVY DISTRIBUTION CAMP")
 
@@ -291,3 +291,4 @@ if st.button("Generate Duty Chart", type="primary", use_container_width=True):
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             use_container_width=True
         )
+
