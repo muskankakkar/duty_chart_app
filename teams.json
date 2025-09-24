@@ -9,13 +9,14 @@
     "Mr.Gulshan",
     "Mr Pankaj Dwivedi",
     "Mr Yogesh kumar",
-    ""
+    "Ms Sonia",
+    "Mr Rajesh",
+    "Ms Priya"
+    
 
   ],
   "audiologist": [
-    "Mr.Nitin",
     "Mr Vikram Solanki",
-    "Mr Aditya"
   ],
   "edp": [
     "Mr.Mangal",
@@ -25,10 +26,13 @@
     "Mr.Karan",
     "Mr Yogesh Sharma",
     "Mr Devender",
-    "T Maharana"
-
-  ],
+    "Mr.T Maharana",
+    "Mr. Sandeep",
+    "Ms. Ritika",
+    ],
+  
   "spectacles": [
     "spectacles team"
   ]
+
 }
