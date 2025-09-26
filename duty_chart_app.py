@@ -57,7 +57,7 @@ DEFAULT_TEAMS = {
     "edp": ["Mr. Paritosh", "Mr. Yogesh Sharma"],
     "spectacles": ["Spectacles Team"],
     "technician": ["Technician 1", "Technician 2"],
-    "I/C": ["Mr Pankaj Dwivedi"]   # Added default I/C
+    "I/C": ["Mr Pankaj Dwivedi"]
 }
 
 def load_teams(path="teams.json"):
@@ -82,19 +82,23 @@ if "duties" not in st.session_state:
     st.session_state.duties = []
 
 # ---------------- Camp Info Inputs ----------------
-st.markdown("### Camp Information")
+st.markdown("### 🏕️ Camp Information")
 
-chart_title = st.text_input("📝 Duty Chart For:", "DUTY CHART FOR ADIP + RVY DISTRIBUTION CAMP")
+# 👉 New placeholder example
+chart_title = st.text_input(
+    "📝 Duty Chart For:",
+    placeholder="DUTY CHART FOR"
+)
 
 col1, col2 = st.columns(2)
 with col1:
-    venue = st.text_input("📍 Enter Venue", "venue")
-    sap_id = st.text_input("🆔 SAP ID", "Enter sap id")
+    venue = st.text_input("📍 Enter Venue", placeholder="Fill Venue (optional)")
+    sap_id = st.text_input("🆔 SAP ID", placeholder="Fill SAP ID")
 with col2:
-    camp_id = st.text_input("🎪 CAMP ID", "Enter Camp Id")
-    nob = st.text_input("🔢 NOB", "ENTER NOB")
+    camp_id = st.text_input("🎪 CAMP ID", placeholder="Fill CAMP ID")
+    nob = st.text_input("🔢 NOB", placeholder="Fill NOB")
 
-value = st.text_input("💰 VALUE", "Enter value")
+value = st.text_input("💰 VALUE", placeholder="Fill VALUE")
 
 st.divider()
 
@@ -102,30 +106,56 @@ st.divider()
 st.title("📄 Duty Chart Generator")
 st.markdown("Create and download a formatted **Duty Chart** for your camp with just a few clicks.")
 
-# Add Duty Row
+# ---------------- Helper for Others ----------------
+def multiselect_with_others(label, options, key_prefix):
+    """Multiselect that allows an 'Others' option with text input."""
+    selected = st.multiselect(label, options + ["Others"], key=f"multi_{key_prefix}")
+    custom_name = ""
+    if "Others" in selected:
+        custom_name = st.text_input(
+            f"Enter Other {label} Name(s)",
+            key=f"other_{key_prefix}",
+            placeholder="Type additional name(s), comma separated if multiple"
+        )
+        if custom_name:
+            custom_names = [x.strip() for x in custom_name.split(",") if x.strip()]
+            selected = [x for x in selected if x != "Others"] + custom_names
+    return selected
+
+# ---------------- Add Duty Row ----------------
 with st.expander("➕ Add a Duty Row", expanded=True):
     col1, col2 = st.columns([1, 2])
     with col1:
         camp_date = st.date_input("📅 Select Date", value=date.today())
     with col2:
-        # ✅ Fix: Combine I/C and P&O into one list
         team_headed = st.multiselect(
             "👩‍⚕️ Team Headed By",
-            teams["I/C"] + teams["p_o"]
+            teams["I/C"] + teams["p_o"] + ["Others"],
+            key="team_headed"
         )
+        custom_team_headed = ""
+        if "Others" in team_headed:
+            custom_team_headed = st.text_input(
+                "Enter Other Team Head Name(s)",
+                key="other_team_headed",
+                placeholder="Type additional name(s), comma separated if multiple"
+            )
+            if custom_team_headed:
+                custom_names = [x.strip() for x in custom_team_headed.split(",") if x.strip()]
+                team_headed = [x for x in team_headed if x != "Others"] + custom_names
 
     st.markdown("#### Select Team Members")
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
-        selected_po = st.multiselect("P&O", teams["p_o"])
+        selected_po = multiselect_with_others("P&O", teams["p_o"], "po")
     with col2:
-        selected_audiologist = st.multiselect("Audiologist", teams["audiologist"])
+        selected_audiologist = multiselect_with_others("Audiologist", teams["audiologist"], "audiologist")
     with col3:
-        selected_edp = st.multiselect("EDP", teams["edp"])   # ✅ Fixed key + variable name
+        selected_edp = multiselect_with_others("EDP", teams["edp"], "edp")
     with col4:
-        selected_spectacles = st.multiselect("Spectacles", teams["spectacles"])
+        selected_spectacles = multiselect_with_others("Spectacles", teams["spectacles"], "spectacles")
     with col5:
-        selected_technician = st.multiselect("Technician", teams["technician"])
+        selected_technician = multiselect_with_others("Technician", teams["technician"], "technician")
 
     reporting_time = st.text_area(
         "⏰ Reporting Time(s)",
@@ -181,38 +211,50 @@ def build_doc(duties, chart_title, venue, sap_id, camp_id, nob, value):
     doc = Document()
 
     # Heading
-    heading = doc.add_paragraph()
-    hrun = heading.add_run(chart_title.upper())
-    hrun.bold = True
-    hrun.font.size = Pt(14)
-    hrun.font.underline = True
-    heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+    if chart_title.strip():
+        heading = doc.add_paragraph()
+        hrun = heading.add_run(chart_title.upper())
+        hrun.bold = True
+        hrun.font.size = Pt(14)
+        hrun.font.underline = True
+        heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
-    # Sub details (SAP ID, CAMP ID, NOB, VALUE)
-    sub_table = doc.add_table(rows=2, cols=2)
-    sub_table.style = None
-    sub_table.autofit = True
-    sub_table.rows[0].cells[0].text = f"SAP ID: {sap_id}"
-    sub_table.rows[0].cells[1].text = f"CAMP ID: {camp_id}"
-    sub_table.rows[1].cells[0].text = f"NOB = {nob}"
-    sub_table.rows[1].cells[1].text = f"VALUE: {value}"
+    # Sub details table (only show filled fields)
+    sub_fields = []
+    if sap_id.strip(): sub_fields.append(("SAP ID: " + sap_id, ""))
+    if camp_id.strip():
+        if len(sub_fields) == 0: sub_fields.append(("", "CAMP ID: " + camp_id))
+        else: sub_fields[0] = (sub_fields[0][0], "CAMP ID: " + camp_id)
+    if nob.strip(): sub_fields.append(("NOB = " + nob, ""))
+    if value.strip():
+        if len(sub_fields) == 3:
+            sub_fields[2] = (sub_fields[2][0], "VALUE: " + value)
+        elif len(sub_fields) == 2:
+            sub_fields.append(("", "VALUE: " + value))
+        elif len(sub_fields) == 1:
+            sub_fields.append(("", "VALUE: " + value))
 
-    for row in sub_table.rows:
-        for cell in row.cells:
-            for p in cell.paragraphs:
-                p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                for run in p.runs:
-                    run.font.size = Pt(11)
+    if sub_fields:
+        sub_table = doc.add_table(rows=len(sub_fields), cols=2)
+        sub_table.style = None
+        sub_table.autofit = True
+        for r, (c1, c2) in enumerate(sub_fields):
+            sub_table.rows[r].cells[0].text = c1
+            sub_table.rows[r].cells[1].text = c2
+            for cell in sub_table.rows[r].cells:
+                for p in cell.paragraphs:
+                    p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                    for run in p.runs:
+                        run.font.size = Pt(11)
+        doc.add_paragraph()
 
-    doc.add_paragraph()
-
-    # Venue
-    venue_para = doc.add_paragraph()
-    vrun = venue_para.add_run(f"VENUE : {venue}")
-    vrun.font.size = Pt(12)
-    venue_para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-
-    doc.add_paragraph()
+    # Venue (only if provided)
+    if venue.strip():
+        venue_para = doc.add_paragraph()
+        vrun = venue_para.add_run(f"VENUE : {venue}")
+        vrun.font.size = Pt(12)
+        venue_para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+        doc.add_paragraph()
 
     # Duty Table
     table = doc.add_table(rows=1, cols=5)
@@ -228,7 +270,7 @@ def build_doc(duties, chart_title, venue, sap_id, camp_id, nob, value):
         row = table.add_row().cells
         row[0].text = str(i)
         row[1].text = duty["date"].strftime("%d.%m.%Y")
-        row[2].text = "\n".join([f"{th}" for th in duty["team_headed"]])
+        row[2].text = "\n".join(duty["team_headed"])
 
         team_lines = []
         for n in duty["p_o"]:
