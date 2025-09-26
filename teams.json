@@ -11,25 +11,25 @@
     "Ms Sonia",
     "Mr Rajesh",
     "Ms Priya",
-    "Akanksha",
-    "Harshita Sankhla",
-    "Priyanka ",
-    "Sidharth Bhan",          
-    "Richa Jha",
-    "Radhika Awasthi",
-    "Smruti Purna Padhihari",
-    "Swati Saroj",
-    "Vaishnavi Singh",
-    "Amandeep ",
-    "Kunal",
-    "Ajay Kumar Pandit",
-    "Sanjay",
-    "Harsh"
+    "Ms Akanksha",
+    "Ms Harshita Sankhla",
+    "Ms Priyanka ",
+    "Mr Sidharth Bhan",          
+    "Ms Richa Jha",
+    "Ms Radhika Awasthi",
+    "Ms Smruti Purna Padhihari",
+    "Ms Swati Saroj",
+    "Ms Vaishnavi Singh",
+    "Mr Amandeep ",
+    "Mr Kunal",
+    "Mr Ajay Kumar Pandit",
+    "Mr Sanjay",
+    "Mr Harsh"
   ],
   "audiologist": [
     "Mr Vikram Solanki",
-    "Vishal Kumar Maurya",
-    "Nandan Singh"
+    "Mr Vishal Kumar Maurya",
+    "Mr Nandan Singh"
   ],
   "edp": [
     "Mr.Mangal",
@@ -52,6 +52,7 @@
     ]
 
 }
+
 
 
 
