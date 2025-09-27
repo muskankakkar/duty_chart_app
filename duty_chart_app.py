@@ -92,7 +92,7 @@ chart_title = st.text_input(
 
 col1, col2 = st.columns(2)
 with col1:
-    venue = st.text_input("📍 Enter Venue", placeholder="Fill Venue (optional)")
+    venue = st.text_input("📍 Enter Venue", placeholder="Fill Venue")
     sap_id = st.text_input("🆔 SAP ID", placeholder="Fill SAP ID")
 with col2:
     camp_id = st.text_input("🎪 CAMP ID", placeholder="Fill CAMP ID")
@@ -333,3 +333,4 @@ if st.button("Generate Duty Chart", type="primary", use_container_width=True):
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             use_container_width=True
         )
+
